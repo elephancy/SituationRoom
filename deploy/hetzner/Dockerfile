@@ -1,4 +1,4 @@
-FROM caddy:2.9-alpine
+FROM caddy:2.11-alpine
 
 RUN setcap -r /usr/bin/caddy \
   && addgroup -S -g 10001 situationroom \
