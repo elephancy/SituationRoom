@@ -31,6 +31,7 @@ test("CI creates a tested immutable release before deployment", async () => {
 
 test("public workflows produce CI evidence without production publication authority", async () => {
   const workflows = await readWorkflows();
+  await assert.rejects(read("../.github/hetzner-release.json"), { code: "ENOENT" });
   assert.ok(workflows.length > 0);
   assert.equal(workflows.some(({ name }) => name === "deploy-production.yml"), false);
   for (const { source } of workflows) {
