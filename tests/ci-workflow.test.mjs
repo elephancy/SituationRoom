@@ -16,7 +16,7 @@ const readWorkflows = async () => {
 test("CI creates a tested immutable release before deployment", async () => {
   const source = await read("../.github/workflows/ci.yml");
   const workflow = YAML.parse(source);
-  assert.equal(workflow.name, "SituationRoom CI");
+  assert.equal(workflow.name, "CI");
   assert.deepEqual(workflow.permissions, { contents: "read" });
   assert.deepEqual(workflow.jobs.release.needs, ["quality", "repository", "browser"]);
   assert.ok(source.indexOf("npm run build") < source.indexOf("npm run test:sites"));
