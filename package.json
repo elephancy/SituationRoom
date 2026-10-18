@@ -24,7 +24,7 @@
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@fontsource/ibm-plex-sans-condensed": "^5.2.7",
     "@fontsource/libre-baskerville": "^5.2.7",
-    "@tabler/icons-react": "^3.35.0",
+    "@tabler/icons-react": "^3.49.0",
     "@tesseract.js-data/eng": "^1.0.0",
     "@vitejs/plugin-react": "5.0.4",
     "fflate": "^0.8.3",
