@@ -4,7 +4,7 @@ This public repository contains only reviewable application release inputs: arti
 
 GitHub Actions is the normal release path. `SituationRoom CI` runs the complete component and browser gates, creates the corresponding-source archive, embeds public `release.json` metadata, smoke-tests the exact content-addressed image, and publishes a checksummed short-lived artifact.
 
-After that trusted `main` run succeeds, `.github/workflows/deploy-production.yml` acts only as a thin caller. It invokes the public reusable [Hetzner Release Gateway](https://github.com/mahmoudelfeelig/HetznerReleaseGateway) at an immutable reviewed commit and passes the application identifier, source commit, and successful CI run identity. The reusable workflow and private deployment controller independently revalidate provenance before any activation. Host credentials, topology, rollback implementation, and signed deployment receipts remain private and centralized.
+The restricted controller selects an approved, successful, unsuperseded `main` run and consumes the exact checksummed image produced by CI. This repository has no production deployment caller, publication authority, or deployment identity token. The controller independently revalidates repository, branch, event, commit, workflow, and artifact provenance before activation. Host credentials, topology, rollback implementation, and signed deployment receipts remain private and centralized.
 
 The public application contract is independent of the private hosting layout:
 

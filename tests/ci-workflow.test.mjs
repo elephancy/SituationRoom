@@ -4,6 +4,14 @@ import test from "node:test";
 import YAML from "yaml";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
+const workflowDirectory = new URL("../.github/workflows/", import.meta.url);
+const readWorkflows = async () => {
+  const names = (await readdir(workflowDirectory)).filter((name) => /\.ya?ml$/i.test(name));
+  return Promise.all(names.map(async (name) => ({
+    name,
+    source: await readFile(new URL(name, workflowDirectory), "utf8"),
+  })));
+};
 
 test("CI creates a tested immutable release before deployment", async () => {
   const source = await read("../.github/workflows/ci.yml");
@@ -21,37 +29,28 @@ test("CI creates a tested immutable release before deployment", async () => {
   assert.doesNotMatch(source, /\|\s*grep -Fq/);
 });
 
-test("production release delegates to the immutable shared gateway", async () => {
-  const source = await read("../.github/workflows/deploy-production.yml");
-  const workflow = YAML.parse(source);
-  assert.equal(workflow.name, "Deploy SituationRoom Production");
-  assert.deepEqual(workflow.permissions, {
-    actions: "read",
-    contents: "read",
-    "id-token": "write",
-  });
-  assert.match(source, /\.conclusion == 'success'/);
-  assert.match(source, /\.event == 'push'/);
-  assert.match(source, /head_repository\.full_name == github\.repository/);
-  assert.equal(
-    workflow.jobs.release.uses,
-    "mahmoudelfeelig/HetznerReleaseGateway/.github/workflows/release.yml@f6319b2dbaf4c1f10230c6425967f34553acd61d",
-  );
-  assert.deepEqual(workflow.jobs.release.with, {
-    app: "situationroom",
-    source_sha: "${{ github.event.workflow_run.head_sha }}",
-    ci_run_id: "${{ github.event.workflow_run.id }}",
-  });
-  assert.doesNotMatch(source, /secrets:\s*inherit/);
-  assert.doesNotMatch(source, /\b(?:ssh|scp|rsync)\b/i);
-  assert.doesNotMatch(source, /HETZNER_|SSH_PRIVATE_KEY|SSH_KNOWN_HOSTS/);
+test("public workflows produce CI evidence without production publication authority", async () => {
+  const workflows = await readWorkflows();
+  await assert.rejects(read("../.github/hetzner-release.json"), { code: "ENOENT" });
+  assert.ok(workflows.length > 0);
+  assert.equal(workflows.some(({ name }) => name === "deploy-production.yml"), false);
+  for (const { source } of workflows) {
+    const workflow = YAML.parse(source);
+    assert.deepEqual(workflow.permissions, { contents: "read" });
+    for (const job of Object.values(workflow.jobs)) {
+      if (job.permissions === undefined) continue;
+      assert.ok(job.permissions && typeof job.permissions === "object" && !Array.isArray(job.permissions));
+      for (const [permission, level] of Object.entries(job.permissions)) {
+        assert.notEqual(permission, "id-token");
+        assert.ok(["read", "none"].includes(level));
+      }
+    }
+    assert.doesNotMatch(source, /HetznerReleaseGateway|id-token:\s*write/);
+  }
 });
 
 test("all external actions are pinned to immutable commits", async () => {
-  const sources = await Promise.all([
-    read("../.github/workflows/ci.yml"),
-    read("../.github/workflows/deploy-production.yml"),
-  ]);
+  const sources = (await readWorkflows()).map(({ source }) => source);
   const uses = sources.join("\n").match(/uses:\s+[^\s]+/g) ?? [];
   assert.ok(uses.length >= 8);
   for (const entry of uses) {
@@ -69,11 +68,7 @@ test("CI artifact contains only the tested image and its checksum authority", as
 });
 
 test("no workflow can reintroduce a direct host credential path", async () => {
-  const workflowDirectory = new URL("../.github/workflows/", import.meta.url);
-  const workflowNames = (await readdir(workflowDirectory)).filter((name) => /\.ya?ml$/i.test(name));
-  const source = (
-    await Promise.all(workflowNames.map((name) => readFile(new URL(name, workflowDirectory), "utf8")))
-  ).join("\n");
+  const source = (await readWorkflows()).map(({ source }) => source).join("\n");
 
   assert.doesNotMatch(source, /secrets:\s*inherit/);
   assert.doesNotMatch(source, /\b(?:ssh|scp|rsync)\b/i);
