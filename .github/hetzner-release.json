@@ -2,7 +2,7 @@
   "version": 1,
   "id": "situationroom",
   "source": {
-    "repository": "mahmoudelfeelig/SituationRoom",
+    "repository": "elephancy/SituationRoom",
     "default_branch": "main",
     "required_workflows": ["SituationRoom CI"]
   },
