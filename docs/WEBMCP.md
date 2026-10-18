@@ -308,9 +308,16 @@ The test uses the genuine browser API rather than calling definition functions d
 
 ```js
 const tools = await document.modelContext.getTools();
-const resultText = await document.modelContext.executeTool(tool, JSON.stringify(input));
+const tool = tools.find((candidate) => candidate.name === "get_workspace_state");
+const nativeInput = typeof tool.inputSchema === "string" ? JSON.stringify(input) : input;
+const resultText = await document.modelContext.executeTool(tool, nativeInput);
 const result = JSON.parse(resultText);
 ```
+
+Current Chrome accepts an object input and exposes object schemas. Older browser
+builds expose serialized schemas and accept JSON string inputs. The harness
+selects the matching representation before invocation rather than retrying a
+mutation. See the [native API documentation](https://developer.chrome.com/docs/ai/webmcp/imperative-api).
 
 The configured matrix runs every WebMCP browser specification in both installed Chrome and Microsoft Edge. It verifies real schema serialization, discovery, invocation, `toolchange`, visible UI settlement, lens-driven capability replacement, shared freeze and human-resolution propagation, session-only fallback, bounded output retention, candidate source privacy across inspect/search/span tools, reload continuity, and prohibited-action absence. Exact results from the final aggregate run are recorded in [`../independent-verification.md`](../independent-verification.md).
 

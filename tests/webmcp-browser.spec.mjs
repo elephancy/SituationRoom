@@ -40,7 +40,9 @@ async function executeTool(page, name, input) {
       const tools = await document.modelContext.getTools();
       const tool = tools.find((candidate) => candidate.name === toolName);
       if (!tool) throw new Error(`Tool is not registered: ${toolName}`);
-      const serialized = await document.modelContext.executeTool(tool, JSON.stringify(args));
+      // Select the native protocol before execution; never retry a mutation.
+      const input = typeof tool.inputSchema === "string" ? JSON.stringify(args) : args;
+      const serialized = await document.modelContext.executeTool(tool, input);
       return { resultType: typeof serialized, parsed: JSON.parse(serialized) };
     },
     { toolName: name, args: input },
@@ -149,7 +151,10 @@ test("the real page owns WebMCP discovery, governed phase changes, view-only com
   const observedTools = [];
   const initialTools = await discover(page);
   observedTools.push(...initialTools);
-  expect(initialTools.every((tool) => tool.inputSchemaType === "string")).toBe(true);
+  for (const tool of initialTools) {
+    expect(["string", "object"]).toContain(tool.inputSchemaType);
+    expect(tool.inputSchema).toMatchObject({ type: "object", additionalProperties: false });
+  }
   expect(initialTools.map((tool) => tool.name)).toContain("compose_decision_room");
   expect(initialTools.map((tool) => tool.name)).toContain("query_decision_graph");
   assertNoProhibitedNames(initialTools);
