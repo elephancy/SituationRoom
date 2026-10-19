@@ -26,7 +26,7 @@
     "@fontsource/libre-baskerville": "^5.2.7",
     "@tabler/icons-react": "^3.35.0",
     "@tesseract.js-data/eng": "^1.0.0",
-    "@vitejs/plugin-react": "5.0.4",
+    "@vitejs/plugin-react": "6.1.2",
     "fflate": "^0.8.3",
     "pdfjs-dist": "^6.2.108",
     "react": "19.2.0",
