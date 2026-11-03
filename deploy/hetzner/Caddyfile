@@ -8,6 +8,7 @@
 	encode zstd gzip
 
 	header {
+		X-Robots-Tag "noindex"
 		Content-Security-Policy "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
 		Strict-Transport-Security "max-age=31536000"
 		X-Content-Type-Options "nosniff"
