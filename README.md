@@ -125,7 +125,7 @@ The native-browser matrix does not substitute for a Codex model choosing Site to
 
 ## Continuous delivery
 
-`SituationRoom CI` runs deterministic, hosting, OCR, browser-kernel, presentation, routed UI, and real WebMCP checks. It builds one static payload, embeds the corresponding-source archive and public release metadata, smoke-tests the exact image, and publishes a checksummed short-lived release artifact.
+`CI` runs deterministic, hosting, OCR, browser-kernel, presentation, routed UI, and real WebMCP checks. It builds one static payload, embeds the corresponding-source archive and public release metadata, smoke-tests the exact image, and publishes a checksummed short-lived release artifact.
 
 The restricted release controller selects a successful, unsuperseded `main` CI run and consumes its exact tested, checksummed image artifact. Public workflows build and verify the application without production publication authority, deployment identity tokens, or host credentials. Activation policy, rollback, operational safety gates, and receipt signing remain private. A release is accepted only when the controller validates the exact commit, CI provenance, and artifact identity.
 

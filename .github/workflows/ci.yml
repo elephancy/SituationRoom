@@ -1,4 +1,4 @@
-name: SituationRoom CI
+name: CI
 
 on:
   push:
