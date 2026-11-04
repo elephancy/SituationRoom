@@ -1,12 +1,14 @@
 # SituationRoom Decision OS
 
+> **Archived project:** This prototype is no longer maintained as a public demo. The source and local review instructions remain available below.
+
 SituationRoom is a local-first, evidence-heavy decision workspace. A person can ask a decision question in ordinary language and the interface recompiles itself into the most useful causal trace, comparison matrix, scenario fork, or stakeholder brief while the canonical decision record remains unchanged.
 
 The visual concept is a Living Caseboard: an asymmetric editorial evidence desk with a fixed authority spine, an always-reachable Decision Firewall, source-linked instruments, and a red causal thread connecting evidence to outcomes. It is not a chat wrapper or a generic dashboard.
 
 ## Quick start for judges
 
-- **Live app:** [https://situationroom.elfeel.me](https://situationroom.elfeel.me) (no account, no keys; all data is synthetic and stays in your browser). Use **More → Reset demo** to reseed the four example decisions.
+- **Local demo:** The example data is synthetic and stays in your browser. Use **More → Reset demo** to reseed the four example decisions.
 - **Enable WebMCP:** Use ChatGPT's in-app browser, or Chrome 149+ with `chrome://flags/#enable-webmcp-testing` set to Enabled before relaunching.
 - **What you should see:** The header reports the number of site tools currently registered, the **Agent activity** thread lists each real call the page received, and **Activity history** shows a receipt with decision and view revisions before and after.
 - **Run locally:** Use Node 24, then run `npm install` and `npm run dev`. The browser suites (`npm run test:ui` and `npm run test:webmcp`) expect installed Chrome and Edge at the Windows paths in `playwright.webmcp.config.mjs`.
